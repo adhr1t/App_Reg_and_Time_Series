@@ -1,1 +1,2 @@
-# App_Reg_and_Time_Series
+# Applied Regression and Time Series: Repository Overview
+This is a repository for a course I am currently taking. 
