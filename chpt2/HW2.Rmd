@@ -1,0 +1,341 @@
+---
+title: "HW2"
+author: "Adhrit Srivastav; Ams22362"
+date: "9/10/21"
+output: pdf_document
+---
+
+## 2.28 Enrollment in mathematics courses
+```{r}
+mathEnrollment = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/MathEnrollment.csv")
+attach(mathEnrollment)
+
+# remove row 2 (AYear 2003)
+MathEnrollmentR = mathEnrollment[-3,]
+attach(MathEnrollmentR)
+
+plot(Spring ~ Fall)
+modelMR = lm(Spring ~ Fall)
+abline(modelMR, col = 'red')
+
+# residual plot
+resMR = resid(modelMR)
+plot(fitted(modelMR), resMR)
+abline(h = 0, col = 'red')
+
+plot(resMR ~ AYear)
+
+summary(modelMR)
+
+anova(modelMR)
+
+#Confidence Interval for a Prediction
+new = data.frame(Fall=-1.0483)
+predict(modelMR, new, se.fit=T, interval='confidence', level=0.95)
+
+-1.0483 - qt(.975, 8)*0.3805
+-1.0483 + qt(.975, 8)*0.3805
+
+```
+
+a) There is a positive trend. The fact that there is a trend indicates that the independence test is not passed.
+
+b) 48.68% of variability in spring enrollment is explained by using a simple linear model with fall enrollment as the predictor.
+
+c) Provided in the code output.
+
+d) From the ANOVA table output, we can see the F test statistic is greater than 1 and the p=value is very close to 0.02487 (and less than .05), which gives us evidence that there is significant linear association between spring and fall enrollments.
+
+e) The 95% confidence interval for the slope of this model is =1.925735 to -0.1708654 This interval does not contain zero which means there is a statistically significant difference between the fall and spring enrollments.
+
+
+## 2.34 Moth eggs
+```{r}
+moth = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/MothEggs.csv")
+attach(moth)
+
+# correlation coefficient between the variables
+cor(BodyMass, Eggs)
+
+# get the p-value to determine statistical significance of correlation coefficient
+modelM = lm(Eggs ~ BodyMass)
+anova(modelM)
+
+summary(modelM)
+plot(Eggs ~ BodyMass)
+
+```
+
+a) I would expect there to be a positive association between body mass and number of eggs because a moth with more mass is likely to be healthier. Healthier organisms tend to have increased fertility and in this case more numbers of eggs.
+
+b) The correlation coefficient for measuring the strength of linear association between BodyMass and Eggs is .441.
+
+c) The p-value is .004916 which is less than the significance value (.05) and thus indicates that the association between the two variables is statistically significant.
+
+d) $\hat{Eggs}$ = 24.38 + 79.86*BodyMass
+
+e) There is one outlier where the BodyMass was 1.668 and the number of Eggs were 0.
+
+
+## 2.35 Moth eggs: subset
+```{r}
+moth = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/MothEggs.csv")
+attach(moth)
+
+plot(Eggs ~ BodyMass)
+modelM = lm(Eggs ~ BodyMass)
+abline(modelM, col = 'red')
+summary(modelM)
+
+# residual plot
+resM = resid(modelM)
+plot(fitted(modelM), resM)
+abline(h = 0, col = 'red')
+
+nrow(moth)
+mothR = moth[-39,]
+attach(mothR)
+
+plot(Eggs ~ BodyMass)
+modelMR = lm(Eggs ~ BodyMass)
+abline(modelMR, col = 'red')
+summary(modelMR)
+
+# residual plot
+resMR = resid(modelMR)
+plot(fitted(modelMR), resMR)
+abline(h = 0, col = 'red')
+
+```
+
+a) $\hat{Eggs}$ = 29.56 + 79.24*BodyMass
+
+b) The conditions are not met because the residual plot's data points fanned out, indicating it did not pass the equal variance condition.
+
+c) The estimated slope with the moth that had no eggs was 79.86 while the estimated slope without the moth with no eggs was 79.24.
+
+d) The percent of variability with the moth that had no eggs is 19.48% and the percent of variability without the moth that had no eggs is 26.64%.
+
+
+## 2.40 Predicting Grinnell house prices
+```{r}
+gHouses = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/GrinnellHouses.csv")
+attach(gHouses)
+
+plot(SalePrice ~ ListPrice)
+modelG = lm(SalePrice ~ ListPrice)
+abline(modelG, col = 'red')
+summary(modelG)
+
+# predict mean SalePrice for a home listed at $300,000
+#predSPrice = predict(modelG, data.frame(ListPrice = 300000))
+
+
+#Confidence Interval for a Prediction
+#newG = data.frame(ListPrice = predSPrice)
+#predict(modelG, newG, se.fit=T, interval='confidence', level=0.90)
+
+#Prediction Interval for a Prediction
+#predict(modelG, newG, se.fit=T, interval='prediction', level=0.90)
+
+
+
+# predict mean Price for a textbook with 450 pages
+newS = data.frame(ListPrice = 300000)
+
+#Confidence Interval for a Prediction
+predict(modelG, newS, se.fit=T, interval = "confidence", level = .95)
+
+#Prediction Interval for a Prediction
+predict(modelG, newS, se.fit=T, interval = "prediction", level = .95)
+
+```
+
+a) The 90% Confidence Interval for the mean SalePrice of a home that is listed at $300,000 is 281652.3 to 283896.9.
+
+b) The 90% Prediction Interval for the mean SalePrice of a home that is listed at $300,000 is 266996.6 to 298552.6.
+
+c) The Prediction Interval indicates that all future individual observations of houses listed at \$300,000 will be between 281652.3 and 283896.9 dollars. The Confidence Interval indicates that the likely range of values associated with a home listed at \$300,000 will be between 266996.6 and 298552.6 dollars. We are 90% confident the mean $\mu_Y$ SalePrice is between 281652.3 and 283896.9 dollars for the predictor $x^* = 300000$. 90% of the singular observed SalePrices $y$ is between 266996.6 and 298552.6 dollars for the predictor $x^* = 300000$. This makes sense because in the prediction interval, we are predicting a specific value which is much more difficult and will result in a wider interval. Whereas in the confidence interval we are predicting a mean value which is much easier and thus has a narrower interval. 
+
+
+
+
+## 2.44 Tetbook prices: regression intervals
+```{r}
+txtPrice = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/TextPrices.csv")
+attach(txtPrice)
+
+plot(Price ~ Pages)
+modelT = lm(Price ~ Pages)
+abline(modelT, col = 'red')
+summary(modelT)
+
+
+# predict mean Price for a textbook with 450 pages
+newT = data.frame(Pages=450)
+
+#Confidence Interval for a Prediction
+predict(modelT,newT, se.fit=T, interval = "confidence", level = .95)
+
+#Prediction Interval for a Prediction
+predict(modelT,newT, se.fit=T,interval = "prediction", level = .95)
+
+# midpoint of confidence interval
+sum1 = (51.73074 + 74.02024)/2
+
+# midpoint of prediction interval
+sum2 = (0.9035981 + 124.8474)/2
+
+# narrowest prediction interval for price
+mean(Pages)
+
+# predict mean Price for a textbook with 450 pages
+newTM = data.frame(Pages=1500)
+
+#Prediction Interval for a Prediction
+predict(modelT, newTM, se.fit=T, interval = "prediction", level = .95)
+```
+
+a) The 95% confidence interval for the mean price of a 450 page textbook is 51.73074 to 74.02024 dollars.
+
+b) The 95% prediction interval for the mean price of a 450 page textbook is 0.9035981 to 124.8474 dollars.
+
+c) The midpoint of the two intervals are exactly the same: 62.87549. This makes sense because the intervals are essentially the same except that the prediction interval is naturally wider than the confidence interval. The intervals are also centered on the same linear model, which further explains their same midpoint.
+
+d) The width of the prediction interval is wider because the standard error is larger because it is much more difficult to predict a specific value versus a mean value.
+
+e) 464 pages would produce the narrowest possible prediction interval for its price because it's the mean of all textbook pages which will minimize the standard error and thus reduce the prediction interval.
+
+f) The 95% prediction interval for the price of a particular 1500 page textbook is 143.3587 to 291.782 dollars. I am not fully confident in this interval because 1500 pages is very far out of the range of the data. The data only goes until 1060 and we are making the model predict something far outside of its range and not with substantial data to allow us to be 95% confident in its interval.
+
+
+## 2.46 Real estate near Rails to Trails: home size transformation
+```{r}
+rTrails = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/RailsTrails.csv")
+attach(rTrails)
+
+plot(adj2007 ~ squarefeet)
+modelRT = lm(adj2007 ~ squarefeet)
+abline(modelRT, col = 'red')
+summary(modelRT)
+
+predict(modelRT, data.frame(squarefeet = 1.5))
+
+
+newRT = data.frame(squarefeet = 1.5)
+predict(modelRT,newRT, se.fit=T,interval = "prediction", level = .95)
+
+
+# log transform data
+plot(log(adj2007) ~ log(squarefeet))
+modelRTL = lm(log(adj2007) ~ log(squarefeet))
+abline(modelRTL, col = 'red')
+summary(modelRTL)
+
+
+newRT = data.frame(squarefeet = 1.5)
+predict(modelRTL,newRT, se.fit=T,interval = "prediction", level = .95)
+
+# prediction interval back to dollars
+exp(5.469522)
+exp(6.051882)
+
+
+```
+
+a) The selling price of a home that is 1500 square feet in size is 316.7619 thousand dollars.
+
+b) The 95% prediction interval is [211.1232, 422.4006]. This means the model is 95% confidence predicting a singular adj2007 value from the range of 211.1232 to 422.4006. 95% of the singular observed prices $y$ are between 211.1232 and 422.4006 thousand dollars for the predictor $x^* = 1.5$.
+
+c) The model does adhere to conditions except that there is one outlier to the top right of the scatter plot. This is likely having some degree of effect to the model and the prediction interval in part b. The data also fans out the prediction intervals don't account for the increasing variance as the squarefootages increases.
+
+d) The data has become less spread out with the logarithmic transformation. Numerically, the r-squared values are still similar, but visually the data appears to be better fit and less sparse. The outlier in the untransformed data does not appear to be as much of an outlier in the transformed data.
+
+e) The prediction interval for the transformed data is [237.3467, 424.912]. This is a narrower prediction interval to the untransformed data indicating that the model will predict a singular value with 95% confidence with a more accurate degree because its range of predicable values is smaller.
+
+
+## 2.57 Horses for sale
+```{r}
+hPrices = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt2/datasets/HorsePrices.csv")
+attach(hPrices)
+
+# split data so one df is just males and one is just females
+male = subset(hPrices,Sex %in% "m")
+male$Height[is.na(male$Height)] = mean(male$Height, na.rm = TRUE)  # Replace NA with mean height
+female = subset(hPrices,Sex %in% "f")
+female$Height[is.na(female$Height)] = mean(female$Height, na.rm = TRUE)  # Replace NA with mean height
+
+
+# plot all the different variables against price
+#male
+#plot(male$Price ~ male$Age)
+#plot(male$Price ~ male$Height)
+
+#female
+#plot(female$Price ~ female$Age)
+#plot(female$Price ~ female$Height)
+
+#transform the data
+#male
+#age
+plot(male$Price ~ male$Age)    # benchmark, untransformed
+#plot(log(male$Price) ~ male$Age)    
+#plot(male$Price ~ log(male$Age))
+plot(log(male$Price) ~ log(male$Age))    # best scatterplot
+modelMA = lm(log(male$Price) ~ log(male$Age))
+abline(modelMA, col = 'red')
+
+#height
+plot(male$Price ~ male$Height)    # benchmark, untransformed
+plot(log(male$Price) ~ male$Height)    # best scatterplot
+#plot(male$Price ~ log(male$Height))
+#plot(log(male$Price) ~ log(male$Height))    
+modelMH = lm(log(male$Price) ~ male$Height)
+abline(modelMH, col = 'red')
+
+#female
+#age
+plot(female$Price ~ female$Age)    # benchmark, untransformed
+plot(log(female$Price) ~ female$Age)    # best scatterplot
+#(female$Price ~ log(female$Age))
+#plot(log(female$Price) ~ log(female$Age))
+modelFA = lm(log(female$Price) ~ female$Age)
+abline(modelFA, col = 'red')
+
+#height
+plot(female$Price ~ female$Height)    # benchmark, untransformed
+#(log(female$Price) ~ female$Height)    
+#plot(female$Price ~ log(female$Height))
+plot(log(female$Price) ~ log(female$Height))   # best scatterplot
+modelFH = lm(log(female$Price) ~ log(female$Height))
+abline(modelFH, col = 'red')
+
+
+# age is best predictor for male and female horse price
+
+
+# plot residual plots
+
+# male age
+resMA = resid(modelMA)
+plot(fitted(modelMA), resMA)
+abline(h = 0, col = 'red')
+
+# female age
+resFA = resid(modelFA)
+plot(fitted(modelFA), resFA)
+abline(h = 0, col = 'red')
+
+```
+
+My first step was to look at the data. I noticed there were both male and female horses in the data, so I split the datasets into one male and one female dataset. I did this because there is a natural difference in size for males and females, and thus potentially a difference in price, so I wanted to keep the data disparate. I also noticed NA values in the Height column of both datasets, and filled them with the column average. I then began plotting the respective datasets and transforming them in efforts to achieve the best model. This felt like a slightly subjective process because some scatterplots ended up being clearly not useful, and some ended up being extremely similar. I felt that Age was the best predictor for both Male and Female horses through the scatterplots and applied linear models. I also created residual plots and the residual plot for Male Age had one outlier but other than that the data was nicely scattered around zero. The Female Age residual plot was also scattered randomly around zero. Thus I determined the models that were best for predicting horse prices were when I separated the data by sex. Next, I logarithmically transformed the Age and Price data for the male to get my final model. For the females, I logarithmically transformed the Price to get my final model.
+
+
+## 2.61 Gate count: computing the least squares line from descriptive statistics
+
+a) $\widehat{y}$ = 22576.6 + 111.826x\
+   $\widehat{\beta}_1$ = 111.826, .701\*(104807/657); $\bar{y}$ = 247235; $\bar{x}$ = 2009;\
+   247235 = $\widehat{\beta}_0$ + 111.826\*2009 -> $\widehat{\beta}_0$ = 22576.6
+b) ${R}^2$ = .701^2 = .4919; Thus 49.19% of variation in gate counts is explained by enrollments.
+c) We just plug 1445 into the least squares line equation and the output is 184165.136 gate counts.
+d) We plug 2200 into the least squares line equation and get the output of 268594. The actual gate count is 130000, so we subtract the values and get a residual of -138594.

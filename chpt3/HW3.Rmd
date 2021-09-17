@@ -1,0 +1,13 @@
+---
+title: "HW3"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "9/16/2021"
+output: pdf_document
+---
+
+## 3.2 Breakfast Cereals
+
+a) $\widehat{Calories}$ = 116.6
+b) The residual is 6.6 which means the predicted caloric value is 6.6 greater than the actual caloric value.
+
+## 3.4 Breakfast cereals: understanding estimates
