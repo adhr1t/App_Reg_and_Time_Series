@@ -11,3 +11,5 @@ a) $\widehat{Calories}$ = 116.6
 b) The residual is 6.6 which means the predicted caloric value is 6.6 greater than the actual caloric value.
 
 ## 3.4 Breakfast cereals: understanding estimates
+
+The correlation coefficient and other representative values of correlation are not given, so we can't say with confidence whether or not the amount of sugar has a weaker relationship with the number of calories than the amount of fiber.

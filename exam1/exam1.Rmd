@@ -1,0 +1,94 @@
+---
+title: "Exam 1"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "9/21/2021"
+output: pdf_document
+---
+
+## Problem 1
+```{r}
+data1 = read.csv('C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam1/ques1data.csv', fileEncoding="UTF-8-BOM")
+attach(data1)
+
+# a
+mod = lm(cost ~ cargotype)
+summary(mod)
+
+# b
+data1$F = ifelse(data1$cargotype == "F", 1, 0)
+data1$S = ifelse(data1$cargotype == "S", 1, 0)
+data1$D = ifelse(data1$cargotype == "D", 1, 0)
+attach(data1)
+data1
+
+# plot(cost ~ F + S)
+
+model = lm(cost ~ F + S)
+summary(model)
+
+# e
+# residual plot
+
+#re = resid(mod)      # same as model
+#plot(fitted(mod), re)
+#abline(h = 0, col = 'red')
+
+res = resid(model)
+plot(fitted(model), res)
+abline(h = 0, col = 'red')
+
+#plot(mod)      # same as model
+plot(model)
+```
+
+a) $\hat{cost}$ = 3.26 + 9.74\*F + 5.44*S
+
+b) I encoded/coded the dummies by making the code look for "F", "S", and "D" values in the cargotype column in the data. If the code found "F", it would create a new column in the data1 dataframe labeled "F" and put a 1 for every occurance of F in the cargotype column, and a 0 for all other values. I used similar code for the "s" and "D" values in the cargotype column and thus created three additional columns with the variables in cargotype successfully encoded/coded into dummies. The relevant output is the printed data1 dataframe above.
+
+c) For every additional Fragile cargo type, the cost increases approximately on the average by 9.74 after adjusting/controlling for semi-fragile cargo type. For every additional Semi-fragile cargo type, the cost increases approximately on the average by 5.44 after adjusting/controlling for Fragile cargo type.
+
+d) Using the model, the predicted cost for the first observation is 13. The first observation in the dataset is 17.2. Thus the residual is 4.2.
+
+e) The residual plot shows equal variance for the three cargo types as there is no thickening in the plot. The residuals are randomly spread out and have independence. There is also no curvature in the Scale-Location plot indicating that it passes the linearity test. The Q-Q plot also appears to be straight thus the normality test is also passed.
+
+
+## Problem 2
+```{r}
+data2 = read.csv('C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam1/ques2data.csv', fileEncoding="UTF-8-BOM")
+attach(data2)
+
+# a
+model1 = lm(Y ~ X1)
+model2 = lm(Y ~ X2)
+model12 = lm(Y ~ X1 + X2)
+
+# b
+summary(model1)
+summary(model2)
+summary(model12)
+
+# c
+# residual plot
+res1 = resid(model1)
+plot(fitted(model1), res1)
+abline(h = 0, col = 'red')
+
+res2 = resid(model2)
+plot(fitted(model2), res2)
+abline(h = 0, col = 'red')
+
+res12 = resid(model12)
+plot(fitted(model12), res12)
+abline(h = 0, col = 'red')
+
+
+plot(model1)
+plot(model2)
+plot(model12)
+```
+
+a) Report and Summaries provided in the above code.
+
+b) The simple linear regression models are similar. They have similar, small slopes and intercepts near 10. The multiple regression model has coefficients in the whole numbers with a negative intercept. This is quite different from the simple linear regression models and is unusual. Additionally, the p-value for the X1 variable was a large .993 meaning that the variable is not statistically significant. The p-value for the X2 variable was also not statistically significant, but was closer to significance at a value of .106. The unusual aspect is that when both variables are used in the multiple linear regression model, their p-values reduce to <2e-16, making them both statistically significant. This is unusual because alone, the variables do not produce a productive model, but together they create a robust, statistically significant model.
+
+c) I created residual plots in efforts to determine if any of the plots fail any conditions. I determined a Residuals vs Fitted graph showed the nature of the residual plots the best and they show there is a lack of linearity in the plots for the X1 and X2 variables. However, when the Residuals vs Fitted graph is used for the multiple linear regression model, the plot has a nice linear nature. All three of the plots pass the normality assumption because their Q-Q plots appear to be straight. Looking at the Scale-Location plots, some degree of fanning out/thickening is visible for the X1 and X2 variables. Considering this, the equal variance condition is not passed. However, if we look at the Scale-Location plot for the multiple linear regression model, the data plot appears to be straight and thus passes the equal variance condition. Using these plots, we can further our belief that individually, the X1 and X2 variables do not produce a statisfically significant model. When used together in a multiple linear regression model, the model is productive and and robust.
