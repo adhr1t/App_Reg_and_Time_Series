@@ -5,11 +5,161 @@ date: "9/16/2021"
 output: pdf_document
 ---
 
+## Problem 1 in Canvas
+```{r}
+airplane = c(24, 31, 32, 39, 47, 47, 35, 76, 95, 85)
+helicopter = c(30, 30, 33, 38, 58, 58, 48, 75, 85, 55)
+
+modelM = lm(airplane ~ helicopter)
+summary(modelM)
+anova(modelM)
+
+# t stat for first test
+1.1483/0.2311
+
+# t stat for second test
+q = (1.1483-1)/0.2311
+p_value=2*pt(q, df=8, lower.tail=FALSE)
+
+
+# part D, no intercept
+modelMO = lm(airplane ~ helicopter + 0)
+summary(modelMO)
+anova(modelMO)
+
+# t stat for second test
+qO = (1.01813-1)/0.07401
+p_valueO=2*pt(qO, df=9, lower.tail=FALSE)
+
+```
+a) Helicopters are explanatory and airplanes are response. They wanted to use helicopter counts to check airplane counts.
+
+b) $\widehat{Airplane}$ = -7.4632 + ${helicopter}$\*1.1483; For every additional manatee count from a helicopter, the number of manatees counted from an airplane increased by approximately on the average 1.1483. The intercept means that if zero manatees are counted from a helicopter, there will be -7.4632, or zero, manatees counted from an airplane. The coefficient of determination (${R}^2$) is .7553 which means .7553 is the proportion of the variation in manatees counted from an airplane explained by the regression model.
+
+c) In test one where ${H}_0$: ${B}_{1}$ = 0, the t value is 4.969 with a pval of .001094 with degrees of freedom of 8. Because the p-val is less than .05 we reject null and say there is significant association between airplane and helicopter manatee counts. 
+
+\setlength\parindent{24pt} In the second test where ${H}_0$: ${B}_{1}$ = 1, the t value is .6417 with a p-val is .539 with degrees of freedom of 9. We fail to reject null because the p-value is greater than .05 thus there is not significant evidence that there is not a one-for-one increase. Relevant test is the second one because we expect the one-for-one increase and that is what the researchers are testing for.\par
+
+
+d) $\widehat{Airplane}$ = ${helicopter}$ * 1.01813
+
+\indent In test one where ${H}_0$: ${B}_{1}$ = 0, the t value is 13.76 with a pval of 2.386e-07  with degrees of freedom of 9. Because the p-val is less than .05 we reject null and say there is significant association between airplane and helicopter manatee counts with the relation between the two counts going through the origin. 
+
+\indent In the second test where ${H}_0$: ${B}_{1}$ = 1, the t value is .244966 with a p-val is .81197. We fail to reject null because the p-value is greater than .05 thus there is not significant evidence that there is not a one-for-one increase. Relevant test is the second one because we expect the one-for-one increase and that is what the researchers are testing for.
+
+
 ## 3.2 Breakfast Cereals
 
 a) $\widehat{Calories}$ = 116.6
+
 b) The residual is 6.6 which means the predicted caloric value is 6.6 greater than the actual caloric value.
+
 
 ## 3.4 Breakfast cereals: understanding estimates
 
-The correlation coefficient and other representative values of correlation are not given, so we can't say with confidence whether or not the amount of sugar has a weaker relationship with the number of calories than the amount of fiber.
+The correlation coefficient and other representative values of correlation are not given, so we can't say with confidence whether or not the amount of sugar has a weaker relationship with the number of calories than the amount of fiber. The formula coefficients alone are not enough to suggest that the amount of sugar has a weaker relationship with the number of calories than the amount of fiber.
+
+
+## 3.6 Breakfast cereals: interpreting estimates
+
+For every additional gram of fiber per serving, the calories per serving goes down by approximately 3.7 calories after adjusting/controlling for grams of sugar per serving.
+
+
+## 3.9 Body Measurements
+
+a) I do believe that BodyFat and Waist are positively correlated. While someone could innately have a broader bone structure that could result in a larger Waist size, I think a primary proponent would be BodyFat. Humans tend to gain fat in their abdomen area first, thus a larger Waist size would likely have a larger BodyFat percentage.
+
+b) Since waist size is fixed, taller people might have a higher metabolism and thus a lower BodyFat. I can see there being a negative correlation between Height and BodyFat.
+
+c) Similar to part B, there would likely be a negative correlation between Height and BodyFat percentage. Considering this, I believe the coefficient on Height would likely be negative in a multiple regression to predict BodyFat based on Height and Waist.
+
+
+## 3.13 Models for well water
+a) ${Arsenic}$ = ${B}_{0}$ + ${B}_{1}$\*Year + ${B}_{2}$\*Miles + ${B}_{3}$\*Years*Miles + $\epsilon$
+
+b) ${Lead}$ = ${B}_{0}$ + ${B}_{1}$\*Year + ${B}_{2}$\*IClean + ${B}_{3}$\*Years*IClean + $\epsilon$
+
+c) ${Titanium}$ = ${B}_{0}$ + ${B}_{1}$\*Miles + ${B}_{2}$*${Miles}^2$ + $\epsilon$
+
+d) ${Sulfide}$ = ${B}_{0}$ + ${B}_{1}$\*Year + ${B}_{2}$\*Miles + ${B}_{3}$\*Depth + ${B}_{4}$\*Years\*Miles + ${B}_{5}$\*Years\*Depth ${B}_{6}$\*Miles\*Depth + $\epsilon$
+
+
+## 3.16 Predicting faculty salaries
+
+a) ${Salary}$ = ${B}_{0}$ + ${B}_{1}$\*Age\*Seniority + ${B}_{2}$\*Age\*Pub + ${B}_{3}$\*Age\*IGender + ${B}_{4}$\*Seniority\*Pub + ${B}_{5}$\*Seniority\*IGender + ${B}_{6}$\*IGender\*Pub + $\epsilon$
+
+b) I believe Age and Seniority will be correlated because the older a faculty member is the more likely they are to have more years of experience. The younger a faculty member is the less likely they are to have large numbers of years of experience.
+
+c) I believe Seniority and Pub will be correlated because the more years of experience a faculty member has, the more likely they are to have created publications. Naturally, when a faculty member has less years of experience, they are less likely to have large numbers of publications because publications take many years to develop.
+
+d) I do think the dean will be unhappy because that means there is a significant difference in the amount men are getting paid over women. This would indicate a gender-based pay gap which would not be acceptable.
+
+
+## 3.22 Breakfast cereal:
+
+a) The ${R}^2$ is .5439. This means that .5439 is the proportion of the variance in Calories explained by the regression model.
+
+b) The regression standard error is 15.413.
+
+c) The F-ratio for testing the null hypothesis is 19.677.
+
+d) The small p-value of .000002 indicates that at least one of the variables of sugar or fiber is useful for predicting calories in breakfast cereals. The p-value is small enough that we can reject the null hypothesis.
+
+
+## 3.32 Driving fatalities and speed limits
+```{r}
+speed = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/Speed.csv")
+attach(speed)
+
+# a
+plot(FatalityRate ~ Year)
+modelS = lm(FatalityRate ~ Year)
+abline(modelS, col = 'red')
+summary(modelS)
+
+# b
+plot(modelS)
+
+# c
+modelMS = lm(FatalityRate ~ Year + StateControl + Year*StateControl)
+summary(modelMS)
+plot(modelMS)
+
+```
+
+a) The slope is -0.044870.
+
+b) The residual plot has a curvature to it which means it fails the linearity test. The residual plot rebounded.
+
+c) I believe there is a significant change in relationship between fatality rate and year starting in 1995 because the coefficient between fatality rate and year change significantly especially when considering the fact that the data is based on fatalities per 100 million vehicle-miles of travel.
+
+d) Pre 1995: $\widehat{FatalityRate}$ = 2.162e+02 + $\widehat{Year}$\*-1.076e-01\       
+Post 1995: $\widehat{FatalityRate}$ = 54.8 + $\widehat{Year}$\*0.02663
+
+## 3.36 Elephants, gender
+```{r}
+elph = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/ElephantsMF.csv")
+attach(elph)
+
+plot(Height ~ Age)
+
+modelE = lm(Height~Age, method = "qr")
+#abline(modelE, col = 'red')
+summary(modelE)
+
+# creating quadratic model
+Age2 = Age^2
+modelQE = lm(Height ~ Age + Age2)
+summary(modelQE)     # we can see the R^2 value for the quadratic model is .85 whereas basic linear model is only .69. There is clear improvement
+#lines(hourValues, happinessPredict, col='red')
+
+# c
+102.48332 + 10*12.56560 + 10^2*-0.27628
+
+```
+
+a) The plot has a positively curved, exponential pattern/nature.
+
+b) $\widehat{Height}$ = 102.48332 + $\widehat{Age}$\*12.56560 + $\widehat{Age}^2$*-0.27628
+
+c) The predicted height of a 10-year-old elephant is 200.5113 cm.
