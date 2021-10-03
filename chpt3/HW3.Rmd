@@ -123,6 +123,7 @@ plot(modelS)
 # c
 modelMS = lm(FatalityRate ~ Year + StateControl + Year*StateControl)
 summary(modelMS)
+anova(modelMS)
 plot(modelMS)
 
 ```

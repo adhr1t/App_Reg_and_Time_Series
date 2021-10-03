@@ -1,0 +1,169 @@
+---
+title: "HW4"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "9/30/2021"
+output: pdf_document
+---
+
+
+## 3.47 Driving fatalities and speed limits
+```{r}
+speed = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/Speed.csv")
+attach(speed)
+
+# full model
+modelYSYS = lm(FatalityRate ~ Year + StateControl + Year*StateControl)
+summary(modelYSYS)
+anova(modelYSYS)
+
+# reduced model
+modelY = lm(FatalityRate ~ Year)
+summary(modelY)
+anova(modelY)
+
+# reduced model
+# = lm(FatalityRate ~ Year + StateControl)
+#summary(modelYS)
+#anova(modelYS)
+
+t.test(Year*StateControl, FatalityRate)
+
+
+#anova(modelY, modelYS)
+anova(modelY, modelYSYS)
+```
+
+a) There is a significant difference between the slopes of the two lines because the F-statistic is 62.939 with a p-value of 1.386e-08 which gives us evidence that at least one of StateControl and Year:StateControl is useful for predicting FatalityRate. There is not a significant difference between the intercepts because the p-values are very small for both.
+
+b) The nested F-test is similar to the one used in part A in which it was determined that there is a significant difference in slopes. The F-statistic is 62.939 with a p-value of 1.386e-08 which indicates that the ${B}_{3}$ slope is significant. This result is the same as a t-test for that coefficient because when run with that coefficient, a p-value of 1.429e-05 is produced, indicating statistical significance of the coefficient.
+
+
+## 3.48 Real estate near Rails to Trails
+```{r}
+rail = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/RailsTrails.csv")
+attach(rail)
+
+
+# a
+boxplot(adj2007 ~ garagegroup)
+t.test(adj2007 ~ garagegroup)
+
+# b
+modelD = lm(adj2007 ~ distance)
+summary(modelD)
+
+# c
+modelDG = lm(adj2007 ~ distance + garagegroup)
+summary(modelDG)
+
+# d
+modeldg = lm(adj2007 ~ distance*garagegroup)
+summary(modeldg)
+
+# e
+anova(modelD, modelDG)
+```
+
+a) The p-value of .007896 indicates there is a significant difference between the price of a home based on if it has garage spaces or not.
+
+b) For every additional unit of distance, the home price decreases approximately on the average by 54.427.
+
+c) For every additional unit of distance, the home price decreases approximately on the average by 51.025 after adjusting/controlling for garagegroup. For every additional yes on if there are garage spaces, the home price increases approximately on the average by 37.892 after adjusting/controlling for distance.
+
+d) The distance variable has a p-value < .05, where as garagegroupyes, and distance:garagegroupyes are not. For every additional unit of distance, the home price decreases approximately on the average by 46.302.
+
+e) The p-value is .03809 which is less than .05 and indicates that garagegroup is statistically significant and is useful for predicting the selling price.
+
+
+## 3.49 Real estate near Rails to Trails: transformation
+```{r}
+rail = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/RailsTrails.csv")
+attach(rail)
+
+# a
+modelDSN = lm(log(adj2007) ~ log(distance) + log(squarefeet) + no_full_baths)
+summary(modelDSN)
+
+# b
+plot(modelDSN)
+
+# c
+modeldsn = lm(log(adj2007) ~ log(distance)*log(squarefeet) + log(distance)*no_full_baths + log(squarefeet)*no_full_baths + log(distance)*log(squarefeet)*no_full_baths)
+summary(modeldsn)
+
+# d
+anova(modelDSN, modeldsn)
+```
+
+a) $\widehat{log(adj2007)}$ = 5.41777 + -0.04883$\widehat{log(distance)}$ + 0.59328$\widehat{log(squarefeet)}$ + .05667$\widehat{no\_full\_baths}$. All of the rates are statistically significant. For every additional unit of distance, the log of home price decreases approximately on the average by .04883 after adjusting/controlling for log(squarefeet) and number of full bathrooms. For every additional unit of the log of squarefootage, the home price increases approximately on the average by .59328 after adjusting/controlling for log(distance) and number of full baths. For every additional full bathroom, the home price increases approximately on the average by .05667 after adjusting/controlling for log(distance) and log(squarefeet). 
+
+b) The residual plot passes the linearity test because the data seems evenly scattered around zero and there is not a huge curve in the data show in the Residuals vs Fitted graph. There is also no thickening so the data passes the equal variance condition. The Q-Q plot is nearly straight so it also passes the normality test.
+
+c) The only rates that were statistically significant were the log(distance) and log(squarefeet):no_full_baths interaction rate. This is quite different from part A because all rates in part A were statistically significant. $\widehat{log(adj2007)}$ = 5.545207 + 0.355179$\widehat{log(squarefeet)}$ + 0.172022$\widehat{log(squarefeet):no_full_baths}$
+
+d) The p-value from the nested F-test is .08986 which is not statistically significant. Thus this indicates that the more complex model from part B did not add significantly to the simple model from part A. The R-squared value also barely changes from .7834 to .8007 which is another indicator that the more complex model is not necessarily beneficial.
+
+
+## 3.53 First-year GPA
+```{r}
+first = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/FirstYearGPA.csv")
+attach(first)
+
+modelF = lm(GPA ~ HSGPA + SATV + HU + White)
+summary(modelF)
+
+# b
+#Confidence Interval for a Prediction
+newF = data.frame(HSGPA = 3.2, SATV = 600, HU = 10, White = 1)
+predict(modelF, newF, se.fit=T, interval = "prediction", level = .95)
+
+# c
+modelFS = lm(GPA ~ HSGPA + SATV + HU + White + SS)
+summary(modelFS)
+
+# d
+#Confidence Interval for a Prediction
+newFS = data.frame(HSGPA = 3.2, SATV = 600, HU = 10, White = 1, SS = 10)
+predict(modelFS, newFS, se.fit=T, interval = "prediction", level = .95)
+```
+a) The predicted GPA is 2.969829.
+
+b) The 95% prediction interval for the GPA of this student is 2.212739 to 3.726919 dollars.
+
+c) The predicted GPA would be 2.98512. The 95% prediction interval for the GPA of this student would be 2.229526 to 3.740715 dollars.
+
+
+## 3.54 Combining explanatory variables
+
+a) ${Y}$ = ${X_2}$ + 3. There is a positive association between ${X_2}$ and ${Y}$.
+
+b) ${Y}$ = -.5${X_1}$ + 2${X_2}$ + 1. No they are not in the direction because the signs of ${X_1}$ and ${X_2}$ are different. The sign of ${X_1}$ in its original equation was positive, whereas the sign of ${X_1}$ in the multivariate equation is negative. The sign of ${X_2}$ is the same in both the simple and multivariate equations.
+
+
+## 3.55 Porsche versus Jaguar prices
+```{r}
+cars = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt3/datasets/PorscheJaguar.csv")
+attach(cars)
+
+# splitting data based on porsche or jaguar
+porsche = subset(cars,Porsche %in% "1")
+jaguar = subset(cars,Porsche %in% "0")
+
+
+# models
+modelPMA = lm(porsche$Price ~ porsche$Mileage + porsche$Age)
+modelJMA = lm(jaguar$Price ~ jaguar$Mileage + jaguar$Age)
+summary(modelPMA)
+summary(modelJMA)
+
+# plots
+plot(modelPMA)
+plot(modelJMA)
+
+# nested F test
+modelPM = lm(porsche$Price ~ porsche$Mileage)
+modelJM = lm(jaguar$Price ~ jaguar$Mileage)
+anova(modelPM, modelPMA)
+anova(modelJM, modelJMA)
+```
+Both porsche and jaguar residual plots passed the linearity and equal variance tests. The residual plot for jaguar had a slight curve to it, but it still passes linearity. They both also pass the normality condition because their Q-Q plots appear to be straight. In both multiple linear regression models, the car Age variable had p-values of over .05 and were thus not statistically significant. Both Mileage variables were statistically significant. If we reduce the models to just mileage as the explanatory variables and run a nested F-test, both p-value are above .05 thus indicating that Age is not a beneficial variable in both models. The nature of the price versus mileage is similar for the two types of cars because in both cases, every additional mile reduces the price of the car by a similar value. Porsches tend to be naturally more expensive, starting at an intercept of 70.9192, wherease Jaguars' intercept is at 57.8865. Porsches also depreciate in prices more quickly because for every additional unit of mileage, the price of a Porsche decreases by -0.5613. In Jaguars, for every additional unit of mileage, the price of the Jaguar decreases by -0.4394.
