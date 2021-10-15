@@ -1,0 +1,145 @@
+---
+title: "HW #5"
+author: "Tommy He, eid: th29764"
+date "10/11/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+## Problem 1
+```{r}
+tip <- c(3, 4, 5, 6, 7, 8, 9, 11)
+bill <- c(18, 24, 26, 32, 35, 39, 47, 58)
+data <- data.frame(tip, bill)
+train=sample(392,196,replace=F)
+full_model = lm(data$tip~data$bill, data = data, subset = train)
+mean((data$tip-predict(full_model,data))[-train]^2)
+no_int_model = lm(data$tip~data$bill - 1, data = data, subset = train)
+mean((data$tip-predict(no_int_model,data))[-train]^2)
+```
+a) After comparing the two models using the validation set approach it turns out that the no int model has a lower mean squared error value.
+
+```{r}
+tip <- c(3, 4, 5, 6, 7, 8, 9, 11)                                                 
+bill <- c(18, 24, 26, 32, 35, 39, 47, 58)
+data <- data.frame(tip, bill)
+library(boot)
+glm.fit=glm(tip~bill,data=data)
+glm.fit2 = glm(tip~bill - 1 ,data=data)
+cv.err=cv.glm(data,glm.fit)
+cv.err$delta[1]
+cv.err2=cv.glm(data,glm.fit2)
+cv.err2$delta[1]
+```
+b) models compared above using LOOCV approach
+
+```{r}
+tip <- c(3, 4, 5, 6, 7, 8, 9, 11)
+bill <- c(18, 24, 26, 32, 35, 39, 47, 58)
+data <- data.frame(tip, bill)
+glm.fit=glm(tip~bill,data=data)
+glm.fit2 = glm(tip~bill - 1 ,data=data)
+cv.error = cv.glm(data, glm.fit,K=4)$delta[1]
+cv.error2 = cv.glm(data, glm.fit2,K=4)$delta[1]
+cv.error
+cv.error2
+```
+c) 4 fold cross validation approach above
+
+## Problem 2
+```{r}
+set.seed(1)
+y <- rnorm(100)
+x <- rnorm(100)
+y <- x - 2 * x^2 + rnorm(100)
+plot(x, y)
+library(boot)
+set.seed(1)
+Data <- data.frame(x, y)
+fit.glm.1 <- glm(y ~ x)
+cv.glm(Data, fit.glm.1)$delta[1]
+fit.glm.2 <- glm(y ~ poly(x, 2))
+cv.glm(Data, fit.glm.2)$delta[1]
+fit.glm.3 <- glm(y ~ poly(x, 3))
+cv.glm(Data, fit.glm.3)$delta[1]
+fit.glm.4 <- glm(y ~ poly(x, 4))
+cv.glm(Data, fit.glm.4)$delta[1]
+set.seed(10)
+fit.glm.1 <- glm(y ~ x)
+cv.glm(Data, fit.glm.1)$delta[1]
+fit.glm.2 <- glm(y ~ poly(x, 2))
+cv.glm(Data, fit.glm.2)$delta[1]
+fit.glm.3 <- glm(y ~ poly(x, 3))
+cv.glm(Data, fit.glm.3)$delta[1]
+fit.glm.4 <- glm(y ~ poly(x, 4))
+cv.glm(Data, fit.glm.4)$delta[1]
+```
+a) n=100, p=2, Y = X - 2X^2 = e
+b) curved relationship shown by the plot above
+c) models above
+d) models above
+e) Its the smallest for fit 2 because the relationship is quadratic
+f) p value shows the significance statistically of the linear and quadratic terms
+
+## Problem 3
+
+```{r}
+library(olsrr)
+data = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/hospitaldata.csv")
+attach(data)
+model = lm(Hours~Xray+BedDays+Length)
+summary(model)
+plot(model)
+ols_plot_resid_stud(model)
+ols_plot_dffits(model)
+ols_plot_dfbetas(model)
+```
+a-g) shown in above code module
+
+
+## Problem 4
+
+```{r}
+data = read.csv('C:\\Users\\tommy\\OneDrive\\Desktop\\Cocaine dataset.csv')
+data
+attach(data)
+model = lm(price~quant+qual+trend)
+summary(model)
+```
+a) An increase in grams of cocaine sale will reduce the price of cocaine and so we would expect the coefficient to have a negative sign. The quality in terms of percentage purity will mean that as that increases the prices of cocaine will also increase. Thus the coefficient will have a positive sign by expectation.The time trend variable should also have a positive sign as prices will increase over time.
+
+b) Based on the summary model results the signs of the explanatory variables allign with the logical assumptions made in part A.
+
+c) Based on the R-squared coefficient approximately 51% of the variance in price is explained by the other variables.
+
+d) Ho: risk of getting caught is the same regardless of nubmer of sales made
+Ha: risk of getting caught is lower for a lower number of sales
+
+e) This test can be seen in the model summary checking whether qual is statistically significant and the answer is that it is not influencing the price surprisingly.
+
+f) The average annual price of cocaine is increasing probably because the price adjusts for inflation accordingly every year.
+
+## Problem 5
+a)
+```{r}
+data = read.csv('C:\\Users\\tommy\\OneDrive\\Desktop\\gpa.csv')
+attach(data)
+model= lm(colGPA~ACT)
+summary(model)
+confint(model)
+```
+
+b)
+```{r}
+data = read.csv('C:\\Users\\tommy\\OneDrive\\Desktop\\gpa.csv')
+attach(data)
+model= lm(colGPA~hsGPA)
+plot(model)
+```
+hsGPA seems like the better predictor in comparison to ACT
+
+## Problem 4.2
+
+## Problem 4.18
+
+## Problem 4.20

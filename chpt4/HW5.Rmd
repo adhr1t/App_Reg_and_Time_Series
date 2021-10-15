@@ -1,0 +1,327 @@
+---
+title: "HW5"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "10/11/2021"
+output: pdf_document
+---
+
+## Problem 1 Predicting tip from bill
+```{r}
+tip = c(3, 4, 5, 6, 7, 8, 9, 11)
+bill = c(18, 24, 26, 32, 35, 39, 47, 58)
+toy = data.frame(tip, bill)
+
+# a
+set.seed(1789)
+#train data
+train=sample(length(tip), length(tip)/2, replace=F)
+
+modelToy=lm(tip~bill, data = toy, subset=train)
+
+modelNOINT = lm(tip~ 0 + bill, data = toy, subset=train)
+
+#Compute MSE for the testing set
+mean((tip-predict(modelToy, toy))[-train]^2)
+mean((tip-predict(modelNOINT, toy))[-train]^2)
+
+
+# b
+library(boot)
+# simple lin reg model
+glm.fit=glm(tip~bill, data = toy)
+cv.err=cv.glm(toy,glm.fit)
+cv.err$delta[1]
+
+# no-int model
+glm.fitNOINT=glm(tip~ 0 + bill, data = toy)
+cv.errNOINT=cv.glm(toy,glm.fitNOINT)
+cv.errNOINT$delta[1]
+
+
+# c
+# simple lin reg model
+glm.fitP = glm(tip ~ bill, data = toy)
+cv.errorP = cv.glm(toy, glm.fitP,K=4)$delta[1]
+cv.errorP
+
+# no-int model
+glm.fitNOINT = glm(tip ~ 0 + bill, data = toy)
+cv.errorNOINT = cv.glm(toy, glm.fitNOINT,K=4)$delta[1]
+cv.errorNOINT
+```
+
+a) The Validation Set approach splits the data into training and testing sets that we can use to further validate the model's efficacy. It gives insight on how the model will perform when applied to new data. The simple regression model has an MSE of 0.0918386 while the no-int model has a larger MSE of 0.1215984. 
+
+b) Leave One Out Cross Validation (LOOCV) is when (n-1) observations are considered as the training set and the remainder are used as the test/validation set. The MSE for the simple regression model is 0.1972437 while the MSE of the no-int model is 0.1432629. Simple linear regression has higher MSE.
+
+c) The 4-fold Cross Validation basically runs the training and validation data sets four times. The MSE for the simple regression model is 0.1632529 while the MSE of the no-int model is 0.125475. MSE of simple linear regression has higher MSE.
+
+
+## Problem 2
+```{r}
+set.seed(1)
+y=rnorm(100)
+x=rnorm(100)
+y=x-2*x^2+rnorm(100)
+
+# b
+plot(y ~ x)
+
+# c
+set.seed(1)
+randData = data.frame(x, y)
+fit.glm1 <- glm(y ~ x)
+cv.glm(randData, fit.glm1)$delta[1]
+fit.glm2 <- glm(y ~ poly(x, 2))
+cv.glm(randData, fit.glm2)$delta[1]
+fit.glm3 <- glm(y ~ poly(x, 3))
+cv.glm(randData, fit.glm3)$delta[1]
+fit.glm4 <- glm(y ~ poly(x, 4))
+cv.glm(randData, fit.glm4)$delta[1]
+
+# d
+set.seed(1986)
+randData = data.frame(x, y)
+fit.glm1 <- glm(y ~ x)
+cv.glm(randData, fit.glm1)$delta[1]
+fit.glm2 <- glm(y ~ poly(x, 2))
+cv.glm(randData, fit.glm2)$delta[1]
+fit.glm3 <- glm(y ~ poly(x, 3))
+cv.glm(randData, fit.glm3)$delta[1]
+fit.glm4 <- glm(y ~ poly(x, 4))
+cv.glm(randData, fit.glm4)$delta[1]
+
+# e
+summary(fit.glm1)
+summary(fit.glm2)
+summary(fit.glm3)
+summary(fit.glm4)
+
+```
+
+a) n is 100. p is 2. y = -2x^2 + x
+
+b) The data is curved and parabolic.
+
+c) In the code above
+
+d) Yes, they are the same. Because changing random seed doesn't change overall approach.
+
+e) The second model had the smallest LOOCV error because it was a quadratic model.
+
+f) Intercept, degree 1, and degree 2  are all statistically significant. This is consistent with the conclusions drawn from the cross-validation results.
+
+
+## Problem 3
+```{r}
+library(olsrr)
+hospital = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/hospitaldata.csv")
+attach(hospital)
+
+modelH = lm(Hours ~ Xray + BedDays + Length)
+summary(modelH)
+
+plot(modelH)
+
+# c
+lm.influence(modelH)$hat
+
+
+# d
+ols_plot_resid_stud_fit(modelH)
+ols_plot_dffits(modelH)
+ols_plot_dfbetas(modelH)
+```
+
+a) $\widehat{Hours}$ = 1523.38924 + ${Xray}$\*0.05299 + ${BedDays}$\*0.97848 + ${Length}$\*-320.95083
+
+b) There are some points of possible influential observations.
+
+c) 15, 16, and 17 have high leverage because their hat values are large.
+
+d) We can see there is a singular outlier outside the thresholds.
+
+e) From dffits we can see there are 4 outliers (14, 15, 16, and 17).
+
+f) From dfbetas we can see there are outliers in all of the features. All of the features are responsible for some outliers.
+
+g) Constructed a new model by removing outliers.
+
+
+## Problem 4
+```{r}
+cocaine = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/cocainedata.csv")
+attach(cocaine)
+
+modelC = lm(price~quant+qual+trend)
+summary(modelC)
+confint(modelC)
+```
+
+a) I would expect beta2 to be negative and beta3 to be positive.
+
+b) $\widehat{price}$ = 90.84681 + ${quant}$\*-0.05997 + ${qual}$\*.11620 + ${trend}$\*-2.35459. The signs were as I expected. For every additional gram of cocaine, the price decreases by approximately on the average -0.05997 when controlling for qual and trend. For every additional percentage of purity, the price increases by approximately on the average .11620 when controlling for quant and trend. For every additional unit of time, the price decreases by approximately on the average -2.35459. when controlling for qual and quant.
+
+c) The R-Squared value tells us that 50.97% of the variation in cocaine price is explained by the model shown above.
+
+d) H0: the number of sales has no impact on the risk of getting caught. HA: the greater the number of sales, the higher the risk of getting caught. We can see that the p-value of quant is 2.85e-07 which is less than .05 which means we can reject the null hypothesis.
+
+e) H0: the quality of cocaine has no influence on price. HA: the quality of cocaine does have an influence on price. We see that the p-value of qual is .57 which is greater than the alpha which indicates that we fail to reject the null hypothesis.
+
+f) -2.3546. The price is decreasing because the quantity and quality of cocaine is decreasing as smugglers get caught and as they mass produce.
+
+
+## Problem 5
+```{r}
+gpa = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/gpa.csv")
+attach(gpa)
+
+lower = sqrt(((139)*0.3656**2)/qchisq(.9,139))
+upper = sqrt(((139)*0.3656**2)/qchisq(.1,139))
+
+modelGA = lm(colGPA ~ ACT)
+summary(modelGA)
+plot(modelGA)
+
+modelGH = lm(colGPA ~ hsGPA)
+summary(modelGH)
+plot(modelGH)
+
+lower1 = sqrt(((139)*0.34**2)/qchisq(.9,139))
+upper1 = sqrt(((139)*0.34**2)/qchisq(.1,139))
+
+```
+
+a)  The 80% confidence interval suggests that ACT is not an adequate predictor. The confidence interval is .3399679 to .3966225.
+
+b) 
+i. For every increase in unit of hsGPA, colGPA increases by approximately on the average .48. 
+
+ii. We are testing if H0: beta_1 = 0 because we want to see if there is any difference between hsGPA and colGPA. We reject the null hypothesis bc p-value is less than alpha. Thus there is a significant difference between hsGPA and colGPA.
+
+iii. The residual plot passes the linearity test and the equal variance condition. It also passes normality and randomness conditions.
+
+iv. Yes hsGPA is an adequate predictor for colGPA using the admission committee's guidelines because the upper bound of the confidence interval is less than .5/1.28. 
+
+v. The hsGPA seems like a better predictor because its R-Squared value is 17.19% which is greater than the ACT predictor's R-Squared value of 4.275%. Upper bound for hsGPA also less than .5/1.28 so it's an adequate predictor, whereas ACT is not even an adequate because the upper bound is greater than .5/1.28.
+
+
+## 4.2 Adirondack High Peaks
+```{r}
+library(car)
+peaks = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/datasets/HighPeaks.csv")
+attach(peaks)
+
+plot(Time ~ Elevation)
+
+modelP = lm(Time ~ Elevation + Length)
+summary(modelP)
+
+modelL = lm(Time ~ Length)
+summary(modelL)
+
+anova(modelL, modelP, test = 'F')
+
+#c
+avPlots(modelP)
+
+```
+
+a) It does not look like elevation would be a good predictor for time because the data is very scattered and random.
+
+b) The t-test and nested F-test indicate that elevation is a relevant predictor for the multiple regression model. The two predictor model is better at explaining time because it has an R-Squared value of 77.03% whereas the R-Squared of the Length predictor alone is 73.7%. We already know Elevation is a poor predictor for Time.
+
+c) There is a clear negative trend with added variables plot for elevation.
+
+
+## 4.18 GPA by Verbal SAT slope
+```{r}
+library(caTools)
+satgpa = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/datasets/SATGPA.csv")
+attach(satgpa)
+
+# set.seed(1)
+# data1 = sample.split(GPA, SplitRatio = 0.80)
+# train = subset(satgpa, data1 == TRUE)
+# test = subset(satgpa, data1 == FALSE)
+
+modelS = lm(GPA~VerbalSAT)
+summary(modelS)
+rsquare = summary(modelS)$r.squared
+vsat = satgpa[c("VerbalSAT")]
+
+count = 0
+
+for (i in 1:1000){
+  randomized = cbind(vsat, satgpa$GPA[sample(nrow(satgpa))])
+  colnames(randomized) = c("VerbalSAT", "GPA")
+  model = lm(randomized$GPA~randomized$VerbalSAT)
+  cur = summary(model)$r.squared
+  
+  if (cur >= rsquare){
+    count = count + 1
+  }
+}
+
+count/1000
+
+```
+The p-value is close to .25 so we fail to reject the null hypothesis. We cannot conclude that the coefficient is significantly different from zero. The t-value is 1.156 which correlates to the p-value of .2635 which both reject the null hypothesis and we conclude there is not a significant correlation between VerbalSAT and GPA.
+
+
+
+## 4.20 Bootstrapping Adirondack hikes
+```{r}
+peaks = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt4/datasets/HighPeaks.csv")
+attach(peaks)
+modelLT = lm(Length ~ Time)
+
+# a
+confint(modelLT, level = 0.90)
+
+# b
+  N = 5000
+  boot = c()
+  for (i in 1:N){
+    df = peaks[sample(nrow(peaks), nrow(peaks), replace = TRUE),]
+    boot_model = lm(df$Length~df$Time)
+    slope = boot_model$coefficients[2]
+    boot = append(boot, slope)
+  }
+  
+  hist(boot)
+  
+# c
+avg = mean(boot)
+stdev = sd(boot)
+
+# d
+avg - qt(.95, length(Time))*stdev
+avg + qt(.95, length(Time))*stdev
+
+# e
+sorted = sort(boot)
+l = sorted[N*0.05]
+r = sorted[N*0.95]
+
+# f
+upper_dist = r - 1.07711
+lower_bound = 1.07711 - upper_dist
+lower_dist = 1.07711 - l
+upper_bound = 1.07711 + lower_dist
+  
+```
+
+a) We are 90% confident that the mean time taken to hike is between 0.9141373 and 1.240075.
+
+b) The histogram is slightly skewed right and appears to be centered around 1.1.
+
+c) Mean and SD of bootstrap slopes are roughly equal to that of the un-bootstrapped model.
+
+d) CI 0.8909787 to 1.295605.
+
+e) CI .919 to 1.31
+
+f) New lower and upper bounds are .844 to 1.24.
+
+g) Intervals are similar. Differences can be attributed to slight right skewed bootstrap.
