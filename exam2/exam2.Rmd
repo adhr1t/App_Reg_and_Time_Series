@@ -1,0 +1,32 @@
+---
+title: "exam2"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "11/1/2021"
+output: pdf_document
+---
+
+## Problem 3
+```{r}
+new = c(16, 20, 24)
+standard = c(28, 33, 35)
+# full = c(16, 20, 24, 28, 33, 35)
+
+onewayS = aov(new ~ standard)
+onewayN = aov(standard ~ new)
+summary(onewayS)
+summary(onewayN)
+
+```
+
+
+## Problem 4
+```{r}
+Wetsuit <-c(1.57, 1.47, 1.42, 1.35, 1.22, 1.75, 1.64, 1.57, 1.56, 1.53, 1.49, 1.51)
+
+NoWetsuit <-c(1.49, 1.37, 1.35, 1.27, 1.12, 1.64, 1.59, 1.52, 1.50, 1.45, 1.44, 1.41)
+
+res <- t.test(Wetsuit, NoWetsuit, paired = TRUE)
+res
+```
+
+Given that the p-value is so much lower than any alpha value we can reject the null hypothesis and conclude that there is a difference in speed among those wearing a wetsuit and those not wearing a wetsuit. 
