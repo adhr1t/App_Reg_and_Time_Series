@@ -1,0 +1,56 @@
+---
+title: "project2"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "11/2/2021"
+output: pdf_document
+---
+
+## Problem 2
+```{r}
+library(Stat2Data)
+library(mosaic)
+library(emmeans)
+library(agricolae)
+
+baseball = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam2/FantasyBaseball.csv")
+attach(baseball)
+
+# a
+plot(Time ~ factor(Person))
+
+FFStats=favstats(Time ~ factor(Person))
+FFStats
+
+
+# b
+selectTime = aov(Time ~ factor(Person))
+summary(selectTime)
+
+
+# c
+
+Fitted.Model<-emmeans(selectTime, ~factor(Person))
+Fitted.Model
+pairs(Fitted.Model, adjust='none')    # the estimate is the mean difference between groups
+
+
+FFStats=favstats(Time ~ factor(Person))
+
+tstar=qt(0.975,selectTime$df.residual)
+MSE=summary(selectTime)[[1]]$"Mean Sq"[2]   #gets the MSE from aov summary
+ni=FFStats$n[1]
+LSD=tstar*sqrt(MSE)*sqrt(1/ni+1/ni)
+round(LSD,2)
+y=rep(2,8)
+plot(FFStats$mean,y, xlim=c(0,200), ylim=c(1,4), yaxt="n",ylab="", bty = "n", xlab="Mean Decision Time",cex=1.5)
+plot(FFStats$mean,y, xlim=c(0,100), ylim=c(1,4), yaxt="n",ylab="", bty = "n", xlab="Mean Decision Time",cex=1.5)
+#rest below is labeling the points and showing LSD
+FFMean=FFStats$mean
+
+```
+
+a) The boxplots reveal that the selection times for most of the participants are roughly similar apart for occasional outliers. The only participants that are noticeably different from rest are JW and TS. JW has a higher median selection time and wider ranges of values than the others. TS has the lowest median and extremely narrow ranges of values with a few outliers. JW took the longest and TS took the shortest time to make their decisions.
+
+b) The test statistic is the F-value which is 10.89. The p-value is 1.79e-11 which is less than the alpha, so we reject the null hypothesis. This indicates that there is a difference among the participants in terms of their selection times. 
+
+c) Fisher's LSD value was calculated to be 34.956. Thus, we are looking for the pairwise differences that are greater than 34.956 to declare those differences as significant. The participants whose average selection times differ significantly from which others is provided in pairs: AR - JW, AR - TS, BK - JW, DJ - JW, DJ - TS, DR - JW, DR - TS, JW - MR, JW - RL, JW - TS, MF - TS, AND RL - TS. Overall, JW and TS were differed significantly from the others other than possibly BK and TS. Everyone else was similar.

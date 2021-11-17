@@ -1,0 +1,179 @@
+---
+title: "HW7"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "11/8/2021"
+output: pdf_document
+---
+
+## 6.5 Running dogs
+
+a) The response is the running speed of the dogs.
+b) Vitamin C diet or not and the dogs.
+c) Experimental for the 3 diets given thus 3 levels. Observational for the 5 greyhounds thus 5 levels.
+d) Yes, complete block design because each of the 5 greyhounds got all 3 diets.
+
+
+## 6.6 Fat rats
+
+a) Amount eaten by the rat.
+b) Leptin or insulin shot. Male or female rat.
+c) Experimental for the leptin or insulin shot thus 2 levels. Observational for the male or female rats thus 2 levels.
+d) Potentially not complete block design because the male and female rats were randomly assigned the shots, so there's no guarantee all combinations were applied.
+
+
+## 6.27 Running dogs: df
+a) With blocks: Diets =  2 (I - 1), Blocks = 4 (J - 1), Error/Residual = 8 (I - 1)(J - 1), Total = 14 (IJ - 1)
+No blocks/Completely Randomized: Diets = 2, Error/Residual = 2
+b) The advantage of the No Blocks experimental design is that it removes the possibility of carry-over effects of the diets, but it potentially adds more variability due to there being more test subjects. The advantage of the block design is that it uses fewer dogs, but it'll take longer. It has less degrees of freedom for error/residual.
+
+
+## 6.28 Migraines
+a) Give all 4 volunteers the 4 medications. The units would be each of the 4 people. I will assign the treatments randomly to each of the units. Each subject is a block, time slot experimental unit. All volunteers will get a different treatment at a different time slot. They will be assigned in a way that each subject gets a different treatment and there are no overlaps.
+b) In the attached image.
+
+
+## 6.30 River iron
+```{r}
+iron = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt6/datasets/Riveriron.csv")
+attach(iron)
+
+aov2I = aov(Iron ~ River + Site)
+summary(aov2I)
+
+modelI = lm(Iron ~ River + Site)
+plot(modelI)
+```
+
+a) Outputted above.
+b) The Q-Q Norm plot appears straight thus the data appears normal.
+c) There is a curve to the residuals, thus it might not pass the linearity condition. There don't appear to be pronounced clusters. The data might be fanning out which means it might not pass the equal variance condition.
+d) The estimated fitted value of the leftmost point is -175. This one figtted value strongly suggests that the model is not appropriate because it should not be negative.
+
+
+## 6.36 Alfalfa sprouts
+```{r}
+library(mosaic)
+
+alfalfa = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt6/datasets/Alfalfa.csv")
+attach(alfalfa)
+
+# a
+favstats(Ht4 ~ factor(Row))
+favstats(Ht4 ~ factor(Acid))
+favstats(Ht4)
+
+# b
+aov2A = aov(Ht4 ~ Acid + Row)
+summary(aov2A)
+
+# c
+plot(aov2A, which = 1)
+plot(aov2A, which = 2)
+
+```
+
+a) Means for rows of cups and treatments outputted above. For all 15 cups average = 1.74 and sd = 1.105.
+b) In the above code.
+c) There is slight curvature in the residual plot but it appears to pass the linearity test. The Q-Q Norm plot has slight deviations from the line so it might not pass the normality condition.
+d) I would conclude there is significant difference in average growth due to treatments because the p-value of .0487 is less than alpha and is thus significant.
+e) I would not conclude there is significant difference in average growth due to distance from the window because the p-value of .3235 is greater than alpha and is thus not significant.
+
+
+## 6.37 Alfalfa sprouts: Fisher's LSD
+```{r}
+library(mosaic)
+library(emmeans)
+
+alfalfa = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt6/datasets/Alfalfa.csv")
+attach(alfalfa)
+
+aovA = aov(Ht4 ~ Acid)
+
+Fitted.Model<-emmeans(aovA, ~factor(Acid))
+Fitted.Model
+pairs(Fitted.Model, adjust='none')    # the estimate is the mean difference between groups
+
+
+FFStats=favstats(Ht4 ~ factor(Acid))
+
+tstar=qt(0.975,aovA$df.residual)
+MSE=summary(aovA)[[1]]$"Mean Sq"[2]   #gets the MSE from aov summary
+ni=FFStats$n[1]
+LSD=tstar*sqrt(MSE)*sqrt(1/ni+1/ni)
+round(LSD,2)
+y=rep(2,3)
+plot(FFStats$mean,y, xlim=c(0,5), ylim=c(1,4), yaxt="n",ylab="", bty = "n", xlab="Mean Growth",cex=1.5)
+#rest below is labeling the points and showing LSD
+FFMean=FFStats$mean
+
+
+```
+The LSD value was calculated to be 1.2738, so we are looking for estimates greater than that to declare those differences as significant. The only significant difference was between 3.0Hcl - water. The p-value was also .0189 which is less than alpha thus the levels are different.
+
+
+## 6.38 Unpopped popcorn
+```{r}
+popcorn = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt6/datasets/Popcorn.csv")
+attach(popcorn)
+
+# a
+favstats(Unpopped)
+favstats(Unpopped ~ factor(Brand))
+favstats(Unpopped ~ factor(Acid))
+
+# b
+aov2P = aov(Unpopped ~ Brand + Trial)
+summary(aov2P)
+
+plot(aov2P, which = 1)
+plot(aov2P, which = 2)
+```
+
+a) The mean = 25.5833 for the entire sample. The estimated effects of the brand of the popcorn is that Seaway has more unpopped kernels based on the mean unpopped kernels for each brand.
+b) Two-way ANOVA is in the output above. The Q-Q Norm plot has points not in the straight line so it might not pass the normality test. There is not too much fanning in the plot so it likely passes equal variance.
+c) The brand does appear to make a difference in the mean number of unpopped kernels as the p-value is .0258 which is less than alpha and thus significant. The trial does appear to make a difference in the mean number of unpopped kernels as the p-value is .0362 which is less than alpha and thus significant. 
+
+
+## 6.40 Oral contraceptives: Tukey additivity plot
+```{r}
+contraceptive = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/chpt6/datasets/Contraceptives.csv")
+attach(contraceptive)
+
+
+plot(Residuals ~ Comparison.Values)
+modelO = lm(Residuals ~ Comparison.Values)
+abline(modelO, col = "Red")
+summary(modelO)
+
+```
+Once we plot residuals versus comparision values, we can see the data relatively follows the line. This means the additive model will decently fit the transformed data. Although the points were scattered, there were so many data points that they sent a consistent message. Transforming to logs was indicated. The slope of the line is relatively zero, so there is no need to express the additive model.
+
+
+## 7.7 Heart and soul
+
+    H       S       Diff
+D   2.5     11      -8.5
+R   6       9.5     -3.5
+Diff3.5     1.5
+
+Yes, there is interaction present because when we compare the differences of the means of the rows and columns, they are different.
+
+
+## 7.8 Blood, sweat, and tears
+
+    B       S       T       Diff
+M   7.5     15      15      -22.5
+F   17.5    25      25      -32.5
+Diff-10     -10     -10
+
+There is not interaction present because when we compare the differences of the means of the rows and columns, they are roughly equal.
+
+
+## 7.14 Hypothetical decomposition #1
+
+MSE, MSAB, MSB, MSA
+
+
+## 7.15 Hypothetical decomposition #2
+
+MSB, MSE, MSA, MSAB
