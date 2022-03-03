@@ -1,0 +1,285 @@
+---
+title: "project3"
+author: 'Adhrit Srivastav, eid: Ams22362'
+date: "11/26/2021"
+output: pdf_document
+---
+
+## Problem 1
+```{r}
+library(forecast)
+
+viscocity = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam3/Viscosity.csv")
+attach(viscocity)
+
+
+#Step 0 Graph
+# data appears stationary bc no linear decay in the ACF
+# cuts after lag 2 in the PACF
+par(mfrow=c(3,1))
+plot(ts(y))
+acf(y)
+pacf(y)
+ndiffs(y)
+
+
+#look at diff(y)
+#Step 1 Tentative Identification
+# diffs appear stationary bc no linear decay in the ACF
+# cuts after lag 1 in PACF
+plot(ts(diff(y)))
+acf(diff(y))
+pacf(diff(y))
+
+
+#Step 2 Estimation (the fit)
+fit <- arima(y, order=c(0,1,1))   # MA(1) model
+fit1<-arima(y,order=c(1,0,0))   # AR(1) model
+fit3 <- auto.arima(y)   # AR(3) model
+
+fit
+fit1
+fit3
+
+#Step 3 Check Residuals
+# there is no evidence of significant autocorrelation at any lag of the residuals
+checkresiduals(fit3)
+
+
+#Step 4 Forecast
+par(mfrow=c(1,2))
+#plot(forecast(fit2,h=20))
+plot(forecast(fit3,h=20))
+
+
+```
+
+
+## Problem 2
+```{r}
+library(forecast)
+library(lmtest)
+
+tech = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam3/TechStocks.csv")
+attach(tech)
+
+y = MSFT
+
+#Step 0 Graph
+# data appears non-stationary bc linear decay in the ACF
+par(mfrow=c(3,1))
+plot(ts(y))
+acf(y)
+pacf(y)
+ndiffs(y)
+
+
+#look at diff(y)
+#Step 1 Tentative Identification
+# diffs appear stationary bc no linear decay in the ACF
+# dies on PACF
+plot(ts(diff(y)))
+acf(diff(y))
+pacf(diff(y))
+
+ydiff = diff(y)
+
+#Step 2 Estimation (the fit)
+#fit <- arima(ydiff, order=c(0,1,1))   # MA(1) model
+fit1.0<-arima(ydiff,order=c(1,0,0))   # AR(1) model; 2nd term not important, so we stop at AR(1)
+fit2 <- auto.arima(ydiff)
+
+fit1.0
+fit2
+coeftest(fit2)    # all tests are significant
+
+
+#Step 3 Check Residuals
+# there is supposed significant autocorrelation at lags 8 and 11 of the residuals but they are not seasonal
+# so we can proceed to forecasting
+checkresiduals(fit2)
+
+
+#Step 4 Forecast
+par(mfrow=c(1,2))
+#plot(forecast(fit2,h=20))
+plot(forecast(fit2,h=60))
+
+
+```
+
+## Problem 3
+
+Data is seasonal so we need to do seasonal ARIMA.
+```{r}
+library(forecast)
+library(lmtest)
+
+west = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam3/KeyWest.csv")
+attach(west)
+
+y = WaterTemp
+
+#Step 0 Graph
+# data appears non-stationary bc linear decay in the ACF
+# cuts on lag 1 for PACF
+par(mfrow=c(3,1))
+plot(ts(y))
+acf(y)
+pacf(y)
+ndiffs(y)
+
+
+#look at diff(y)
+#Step 1 Tentative Identification
+# there are significant autocorrelations scattered on the ACF and PACF
+
+# The data is incomplete bc water temperature is seasonal on a yearly basis, but the data does not 
+# go beyond a year. This means seasonal models will not work well on the data despite the fact that 
+# the data is seasonal. We'd need more data to create an effective model.
+
+y %>% diff() %>% diff(lag=24) %>% ggtsdisplay()
+
+
+#Step 2 Estimation (the fit)
+fit1.0<-arima(y,order=c(0,0,1), seasonal = c(0,1,1))
+fit2 <- auto.arima(y)   # MA(2) model
+
+fit1.0
+fit2
+coeftest(fit2)    # all tests are significant
+
+#Step 3 Check Residuals
+# there is supposed significant autocorrelation at lags 8 and 11 of the residuals but they are not seasonal
+# so we can proceed to forecasting
+checkresiduals(fit1.0)
+checkresiduals(fit2)
+
+
+#Step 4 Forecast
+par(mfrow=c(1,2))
+#plot(forecast(fit2,h=20))
+plot(forecast(fit2,h=100))
+
+
+```
+
+## Problem 4
+
+Data is seasonal so we need to do seasonal ARIMA.
+```{r}
+library(forecast)
+library(lmtest)
+
+beans = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam3/StockBeans.csv")
+attach(beans)
+
+y = stockbeans
+
+#Step 0 Graph
+# data appear stationary bc no linear decay in the ACF
+# cuts on lag 1 for PACF
+par(mfrow=c(3,1))
+plot(ts(y))
+acf(y)
+pacf(y)
+ndiffs(y)
+
+
+#Step 1 Tentative Identification
+# ACF appears stationary now
+# cuts after lag 12 for ACF and PACF
+y %>% diff() %>% diff(lag=12) %>% ggtsdisplay()
+
+
+#Step 2 Estimation (the fit)
+fit1.0<-arima(y,order=c(0,1,1), seasonal = list(order = c(0,1,1), period = 12))
+fit1.1<-arima(y,order=c(1,1,0), seasonal = list(order = c(0,1,1), period = 12)) 
+#fit2 <- auto.arima(y)   # AR(2) MA(2) model
+
+fit1.0
+fit1.1
+#fit2
+# coeftest(fit2)    # all tests are significant
+
+#Step 3 Check Residuals
+# there is supposed significant autocorrelation at lags 8 and 11 of the residuals but they are not seasonal
+# so we can proceed to forecasting
+checkresiduals(fit1.0)
+checkresiduals(fit1.1)
+#checkresiduals(fit2)
+
+
+#Step 4 Forecast
+forecast(fit1.0,h=10)
+par(mfrow=c(1,2))
+plot(forecast(fit1.0,h=10))
+
+forecast(fit1.1,h=10)
+par(mfrow=c(1,2))
+plot(forecast(fit1.1,h=10))
+
+
+```
+
+a) The time series plot appears to have a cyclical trend and is potentially seasonal. It continues this pattern quite consistently.
+
+b) The ACF shows strong seasonal pattern and a declining trend that indicates a lack of stationarity. The PACF cuts after lag 4. From the ACF and PACF we can tell we will need to conduct differencing analysis and will need to build a seasonal ARIMA model.
+
+c) When we use the difference values, the ACF becomes stationary and cuts after lag 12 and the PACF cuts after lag 12 as well.
+
+d) The residuals of the two models are very similar. The AIC of the two models are very similar. The L’Jung Box test was also similar for the two models with similar p-values, df’s, and lags used. The standard error values for the two models were also very similar.
+
+e) $Y_t = \delta + \Phi_1LY_{t} + \epsilon_t - \theta_1 \epsilon_{t-s}$;
+$Y_t = \delta + \epsilon_t - \theta_1 \epsilon_{t-1} - \theta_2 \epsilon_{t-s}$
+
+f) Forecast is in the code above.
+
+
+## Problem 5
+
+```{r}
+library(forecast)
+library(lmtest)
+
+series = read.csv("C:/Users/adhri/OneDrive/Documents/R/App_Reg_and_Time_Series/exam3/series.csv")
+attach(series)
+
+
+#Step 0 Graph
+# data appears non-stationary bc linear decay in the ACF
+par(mfrow=c(3,1))
+plot(ts(y))
+acf(y)
+pacf(y)
+ndiffs(y)
+
+
+#look at diff(y)
+#Step 1 Tentative Identification
+# diffs appear stationary bc no linear decay in the ACF
+# dies on PACF
+plot(ts(diff(y)))
+acf(diff(y))
+pacf(diff(y))
+
+
+#Step 2 Estimation (the fit)
+fit <- arima(y, order=c(0,1,1))   # MA(1) model
+
+fit
+coeftest(fit)    # all tests are significant
+
+
+#Step 3 Check Residuals
+# so we can proceed to forecasting
+checkresiduals(fit)
+
+
+#Step 4 Forecast
+forecast(fit,h=10)
+par(mfrow=c(1,2))
+plot(forecast(fit,h=10))
+
+
+```
